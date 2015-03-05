@@ -1,0 +1,22 @@
+{
+  "name": "Heap",
+  "version": "1.0.0",
+  "description": "Heap data structure",
+  "main": "Heap.js",
+  "scripts": {
+    "test": "mocha test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lhtrieu87/js-data-structures/tree/master/Heap"
+  },
+  "keywords": [
+    "Heap"
+  ],
+  "author": "Le Hong Trieu <lhtrieu87@gmail.com> (https://github.com/lhtrieu87)",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "should": "^5.1.0"
+  }
+}
