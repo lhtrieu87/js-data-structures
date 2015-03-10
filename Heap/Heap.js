@@ -38,38 +38,41 @@ function parent(i, size) {
   return Math.floor((i - 1) / 2);
 }
 
-function bubbleDown(array, size, i) {
+function bubbleDown(compareFunc, array, size, i) {
   if(i >= 0 && i < size) {
     var j = i;
 
     var l = leftChild(i, size);
-    if(l >= 0 && array[l].key > array[j].key) {
+    if(l >= 0 && compareFunc(array[l].key, array[j].key) > 0) {
       j = l;
     }
 
     var r = rightChild(i, size);
-    if(r >= 0 && array[r].key > array[j].key) {
+    if(r >= 0 && compareFunc(array[r].key, array[j].key) > 0) {
       j = r;
     }
 
     if(j != i) {
       swap(array, size, i, j);
-      bubbleDown(array, size, j);
+      bubbleDown(compareFunc, array, size, j);
     }
   }
 }
 
-function bubbleUp(array, size, i) {
+function bubbleUp(compareFunc, array, size, i) {
   var p = parent(i, size);
-  if(p >= 0 && array[p].key < array[i].key) {
+  if(p >= 0 && compareFunc(array[p].key, array[i].key) < 0) {
     swap(array, size, p, i);
-    bubbleUp(array, size, p);
+    bubbleUp(compareFunc, array, size, p);
   }
 }
 
-function Heap() {
+function Heap(compareFunc) {
   var array = [];
   var size = 0;
+
+  var bubbleUpLocal = bubbleUp.bind(null, compareFunc);
+  var bubbleDownLocal = bubbleDown.bind(null, compareFunc);
 
   this.clear = function () {
     size = 0;
@@ -87,7 +90,7 @@ function Heap() {
   this.insert = function (key, value) {
     array[size] = new Node(key, value);
     size++;
-    bubbleUp(array, size, size - 1);
+    bubbleUpLocal(array, size, size - 1);
   }
 
   this.pop = function () {
@@ -97,7 +100,7 @@ function Heap() {
 
     swap(array, size, 0, size - 1);
     size--;
-    bubbleDown(array, size, 0);
+    bubbleDownLocal(array, size, 0);
 
     return max;
   }
@@ -113,7 +116,7 @@ function Heap() {
     size = seedArray.length;
 
     for(var k = parent(size - 1); k >= 0; k--) {
-      bubbleDown(array, size, k);
+      bubbleDownLocal(array, size, k);
     }
   }
 
@@ -128,13 +131,15 @@ function Heap() {
 }
 
 Heap.Node = Node;
-Heap.sort = function (initialArray) {
-  var heap = new Heap();
+Heap.sort = function (initialArray, compareFunc) {
+  var bubbleDownLocal = bubbleDown.bind(null, compareFunc);
+
+  var heap = new Heap(compareFunc);
   heap.build(initialArray);
   (function heapSort(heap, count) {
     if(count > 0) {
       swap(initialArray, count, 0, count - 1);
-      bubbleDown(initialArray, count - 1, 0);
+      bubbleDownLocal(initialArray, count - 1, 0);
 
       heapSort(heap, count - 1);
     }

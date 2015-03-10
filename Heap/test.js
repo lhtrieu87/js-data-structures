@@ -2,7 +2,11 @@ var Heap = require('./Heap');
 var should = require('should');
 
 describe('Heap', function () {
-  var heap = new Heap();
+  var heap = new Heap(function (a, b) {
+    if(a < b) return 1;
+    else if(a > b) return -1;
+    else return 0;
+  });
   beforeEach(function () {
     heap.clear();
   });
@@ -21,10 +25,10 @@ describe('Heap', function () {
 
     heap.clear();
 
-    var seed = [new Node(4, 4), new Node(1, 1), new Node(3, 3), new Node(2, 2), new Node(16, 16), new Node(9, 9), new Node(10, 10), new Node(14, 14), new Node(8, 8), new Node(7, 7)];
+    var seed = [new Node(4, 4), new Node(1, 1), new Node(3, 3), new Node(2, 2), new Node(16, 16), new Node(9, 9), new Node(10, 10), new Node(14, 14), new Node(8, 8), new Node(0, 0)];
     heap.build(seed);
 
-    heap.toString().should.equal('(16, 16), (14, 14), (10, 10), (8, 8), (7, 7), (9, 9), (3, 3), (2, 2), (4, 4), (1, 1)');
+    heap.toString().should.equal('(0, 0), (1, 1), (3, 3), (2, 2), (4, 4), (9, 9), (10, 10), (14, 14), (8, 8), (16, 16)');
     heap.getSize().should.equal(seed.length);
     heap.isEmpty().should.equal(false);
   });
@@ -40,15 +44,15 @@ describe('Heap', function () {
 
     heap.insert(2, 2);
     heap.getSize().should.equal(3);
-    heap.toString().should.equal('(3, 3), (1, 1), (2, 2)');
+    heap.toString().should.equal('(1, 1), (3, 3), (2, 2)');
 
-    heap.insert(5, 5);
+    heap.insert(-1, -1);
     heap.getSize().should.equal(4);
-    heap.toString().should.equal('(5, 5), (3, 3), (2, 2), (1, 1)');
+    heap.toString().should.equal('(-1, -1), (1, 1), (2, 2), (3, 3)');
 
-    heap.insert(9, 9);
+    heap.insert(0, 0);
     heap.getSize().should.equal(5);
-    heap.toString().should.equal('(9, 9), (5, 5), (2, 2), (1, 1), (3, 3)');
+    heap.toString().should.equal('(-1, -1), (0, 0), (2, 2), (3, 3), (1, 1)');
   });
 
   it('pop', function () {
@@ -56,17 +60,17 @@ describe('Heap', function () {
     should.not.exist(max);
 
     var Node = Heap.Node;
-    var seed = [new Node(4, 4), new Node(1, 1), new Node(3, 3), new Node(2, 2), new Node(16, 16), new Node(9, 9), new Node(10, 10), new Node(14, 14), new Node(8, 8), new Node(7, 7)];
+    var seed = [new Node(4, 4), new Node(1, 1), new Node(3, 3), new Node(2, 2), new Node(16, 16), new Node(9, 9), new Node(10, 10), new Node(14, 14), new Node(8, 8), new Node(0, 0)];
     heap.build(seed);
 
     max = heap.pop();
-    max.key.should.equal(16);
-    max.value.should.equal(16);
+    max.key.should.equal(0);
+    max.value.should.equal(0);
     heap.getSize().should.equal(9);
 
     max = heap.pop();
-    max.key.should.equal(14);
-    max.value.should.equal(14);
+    max.key.should.equal(1);
+    max.value.should.equal(1);
     heap.getSize().should.equal(8);
   });
 
@@ -79,28 +83,32 @@ describe('Heap', function () {
     heap.build(seed);
 
     max = heap.peek();
-    max.key.should.equal(16);
-    max.value.should.equal(16);
+    max.key.should.equal(1);
+    max.value.should.equal(1);
     heap.getSize().should.equal(10);
   });
 
   it('heap sort', function () {
     var Node = Heap.Node;
     var initialList = [new Node(4, 4), new Node(1, 1), new Node(3, 3), new Node(2, 2), new Node(16, 16), new Node(9, 9), new Node(10, 10), new Node(14, 14), new Node(8, 8), new Node(7, 7)];
-    var sortedList = Heap.sort(initialList);
+    var sortedList = Heap.sort(initialList, function (a, b) {
+      if(a < b) return 1;
+      else if(a > b) return -1;
+      else return 0;
+    });
 
     // In-place sort.
     sortedList.should.equal(initialList);
 
-    sortedList[0].key.should.equal(16);
-    sortedList[1].key.should.equal(14);
-    sortedList[2].key.should.equal(10);
-    sortedList[3].key.should.equal(9);
-    sortedList[4].key.should.equal(8);
-    sortedList[5].key.should.equal(7);
-    sortedList[6].key.should.equal(4);
-    sortedList[7].key.should.equal(3);
-    sortedList[8].key.should.equal(2);
-    sortedList[9].key.should.equal(1);
+    sortedList[9].key.should.equal(16);
+    sortedList[8].key.should.equal(14);
+    sortedList[7].key.should.equal(10);
+    sortedList[6].key.should.equal(9);
+    sortedList[5].key.should.equal(8);
+    sortedList[4].key.should.equal(7);
+    sortedList[3].key.should.equal(4);
+    sortedList[2].key.should.equal(3);
+    sortedList[1].key.should.equal(2);
+    sortedList[0].key.should.equal(1);
   });
 })
