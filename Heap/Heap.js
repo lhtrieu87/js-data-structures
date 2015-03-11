@@ -4,15 +4,6 @@
 // Build from another array:          O(N)
 // Heap.sort (in placed, not stable): O(NlogN)
 
-function Node(key, value) {
-  this.key = key;
-  this.value = value;
-
-  this.toString = function () {
-    return '(' + this.key + ', ' + this.value + ')';
-  }
-}
-
 function swap(array, size, i, j) {
   if(i >= 0 && j >= 0 && i < size && j < size && i != j) {
     var temp = array[i];
@@ -43,12 +34,12 @@ function bubbleDown(compareFunc, array, size, i) {
     var j = i;
 
     var l = leftChild(i, size);
-    if(l >= 0 && compareFunc(array[l].key, array[j].key) > 0) {
+    if(l >= 0 && compareFunc(array[l], array[j]) > 0) {
       j = l;
     }
 
     var r = rightChild(i, size);
-    if(r >= 0 && compareFunc(array[r].key, array[j].key) > 0) {
+    if(r >= 0 && compareFunc(array[r], array[j]) > 0) {
       j = r;
     }
 
@@ -61,7 +52,7 @@ function bubbleDown(compareFunc, array, size, i) {
 
 function bubbleUp(compareFunc, array, size, i) {
   var p = parent(i, size);
-  if(p >= 0 && compareFunc(array[p].key, array[i].key) < 0) {
+  if(p >= 0 && compareFunc(array[p], array[i]) < 0) {
     swap(array, size, p, i);
     bubbleUp(compareFunc, array, size, p);
   }
@@ -87,8 +78,8 @@ function Heap(compareFunc) {
     return size;
   }
 
-  this.insert = function (key, value) {
-    array[size] = new Node(key, value);
+  this.insert = function (value) {
+    array[size] = value;
     size++;
     bubbleUpLocal(array, size, size - 1);
   }
@@ -123,14 +114,13 @@ function Heap(compareFunc) {
   this.toString = function () {
     var strs = [];
     array.forEach(function (n) {
-      strs.push(n.toString());
+      strs.push(n);
     });
 
     return strs.join(', ');
   }
 }
 
-Heap.Node = Node;
 Heap.sort = function (initialArray, compareFunc) {
   var bubbleDownLocal = bubbleDown.bind(null, compareFunc);
 
